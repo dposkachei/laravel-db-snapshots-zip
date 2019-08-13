@@ -31,6 +31,11 @@ class Snapshot
         $this->name = pathinfo($fileName, PATHINFO_FILENAME);
     }
 
+    public function file()
+    {
+        return config('filesystems.disks.snapshots.root') . '/' . $this->name . '.zip';
+    }
+
     public function load($table = '')
     {
         event(new LoadingSnapshot($this));

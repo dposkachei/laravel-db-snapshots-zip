@@ -28,13 +28,13 @@ class SnapshotFactory
         $this->filesystemFactory = $filesystemFactory;
     }
 
-    public function create(string $snapshotName, string $diskName, string $connectionName, $tables = '*', $reject = [], $withZip = true): Snapshot
+    public function create(string $snapshotName, string $diskName, string $connectionName, $tables = [], $reject = [], $withZip = true): Snapshot
     {
         $disk = $this->getDisk($diskName);
 
         $path = $snapshotName;
 
-        $fileName = $snapshotName.'.sql';
+        $fileName = $snapshotName . '.sql';
         $fileName = pathinfo($fileName, PATHINFO_BASENAME);
 
         event(new CreatingSnapshot(
@@ -78,30 +78,30 @@ class SnapshotFactory
 
         if ($withZip) {
             foreach ($aTables as $key => $aTable) {
-                $name = $aTable.'.sql';
+                $name = $aTable . '.sql';
                 $dumpPath = $directory->path($name);
                 $this->getDbDumper($connectionName)->includeTables([$aTable])->dumpToFile($dumpPath);
             }
-            $zip = $directory->path().'/'.$fileName.'.zip';
+            $zip = $directory->path() . DIRECTORY_SEPARATOR . $fileName . '.zip';
 
             Zipper::make($zip)->add($directory->path())->close();
 
-            $to = database_path('snapshots').'/'.$path;
+            $to = config('filesystems.disks.snapshots.root') . DIRECTORY_SEPARATOR . $path;
 
             if (!is_dir(dirname($to))) {
                 mkdir(dirname($to), 0777, true);
             }
 
-            File::move($zip, database_path('snapshots').'/'.$path.'.zip');
+            File::move($zip, config('filesystems.disks.snapshots.root') . DIRECTORY_SEPARATOR . $path . '.zip');
         } else {
-            $to = database_path('snapshots').'/'.$path;
+            $to = config('filesystems.disks.snapshots.root') . DIRECTORY_SEPARATOR . $path;
             if (!is_dir($to)) {
                 File::makeDirectory($to, 0777, true);
             }
 
             foreach ($aTables as $key => $aTable) {
-                $name = $aTable.'.sql';
-                $dumpPath = $to.'/'.$name;
+                $name = $aTable . '.sql';
+                $dumpPath = $to . DIRECTORY_SEPARATOR . $name;
                 $this->getDbDumper($connectionName)->includeTables([$aTable])->dumpToFile($dumpPath);
             }
         }
