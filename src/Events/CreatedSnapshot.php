@@ -1,6 +1,6 @@
 <?php
 
-namespace SpatDposkacheiie\DbSnapshots\Events;
+namespace Dposkachei\DbSnapshots\Events;
 
 use Dposkachei\DbSnapshots\Snapshot;
 
