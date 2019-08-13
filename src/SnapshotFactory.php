@@ -113,8 +113,7 @@ class SnapshotFactory
     private function columns($tables, $reject)
     {
         $aTables = array_map('reset', DB::select('SHOW TABLES'));
-
-        if (!empty($tables) && $tables !== '*') {
+        if (!empty($tables) && $tables[0] !== '*') {
             $aTables = collect($aTables)->reject(function ($name) use ($tables) {
                 return !in_array($name, $tables);
             })->toArray();
