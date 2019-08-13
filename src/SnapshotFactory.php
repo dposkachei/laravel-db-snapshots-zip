@@ -2,11 +2,13 @@
 
 namespace Spatie\DbSnapshots;
 
+use Chumper\Zipper\Facades\Zipper;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Spatie\DbDumper\DbDumper;
 use Illuminate\Contracts\Filesystem\Factory;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Spatie\DbSnapshots\Events\CreatedSnapshot;
-use Spatie\DbDumper\Compressors\GzipCompressor;
 use Spatie\DbSnapshots\Events\CreatingSnapshot;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
 use Spatie\DbSnapshots\Exceptions\CannotCreateDisk;
@@ -26,16 +28,14 @@ class SnapshotFactory
         $this->filesystemFactory = $filesystemFactory;
     }
 
-    public function create(string $snapshotName, string $diskName, string $connectionName, bool $compress = false): Snapshot
+    public function create(string $snapshotName, string $diskName, string $connectionName, $tables = '*', $reject = [], $withZip = true): Snapshot
     {
         $disk = $this->getDisk($diskName);
 
+        $path = $snapshotName;
+
         $fileName = $snapshotName.'.sql';
         $fileName = pathinfo($fileName, PATHINFO_BASENAME);
-
-        if ($compress) {
-            $fileName .= '.gz';
-        }
 
         event(new CreatingSnapshot(
             $fileName,
@@ -43,7 +43,7 @@ class SnapshotFactory
             $connectionName
         ));
 
-        $this->createDump($connectionName, $fileName, $disk, $compress);
+        $this->createDump($connectionName, $fileName, $disk, $path, $tables, $reject, $withZip);
 
         $snapshot = new Snapshot($disk, $fileName);
 
@@ -68,28 +68,71 @@ class SnapshotFactory
         return $factory::createForConnection($connectionName);
     }
 
-    protected function createDump(string $connectionName, string $fileName, FilesystemAdapter $disk, bool $compress = false)
+    protected function createDump(string $connectionName, string $fileName, FilesystemAdapter $disk, $path = '', $tables, $reject, $withZip)
     {
+        $aTables = $this->columns($tables, $reject);
+
         $directory = (new TemporaryDirectory(config('db-snapshots.temporary_directory_path')))->create();
 
-        $dumpPath = $directory->path($fileName);
+        $fileName = str_replace('.sql', '', $fileName);
 
-        $dbDumper = $this->getDbDumper($connectionName);
+        if ($withZip) {
+            foreach ($aTables as $key => $aTable) {
+                $name = $aTable.'.sql';
+                $dumpPath = $directory->path($name);
+                $this->getDbDumper($connectionName)->includeTables([$aTable])->dumpToFile($dumpPath);
+            }
+            $zip = $directory->path().'/'.$fileName.'.zip';
 
-        if ($compress) {
-            $dbDumper->useCompressor(new GzipCompressor());
-        }
+            Zipper::make($zip)->add($directory->path())->close();
 
-        $dbDumper->dumpToFile($dumpPath);
+            $to = database_path('snapshots').'/'.$path;
 
-        $file = fopen($dumpPath, 'r');
+            if (!is_dir(dirname($to))) {
+                mkdir(dirname($to), 0777, true);
+            }
 
-        $disk->put($fileName, $file);
+            File::move($zip, database_path('snapshots').'/'.$path.'.zip');
+        } else {
+            $to = database_path('snapshots').'/'.$path;
+            if (!is_dir($to)) {
+                File::makeDirectory($to, 0777, true);
+            }
 
-        if (is_resource($file)) {
-            fclose($file);
+            foreach ($aTables as $key => $aTable) {
+                $name = $aTable.'.sql';
+                $dumpPath = $to.'/'.$name;
+                $this->getDbDumper($connectionName)->includeTables([$aTable])->dumpToFile($dumpPath);
+            }
         }
 
         $directory->delete();
+    }
+
+
+    private function columns($tables, $reject)
+    {
+        $aTables = array_map('reset', DB::select('SHOW TABLES'));
+
+        if (!empty($tables) && $tables !== '*') {
+            $aTables = collect($aTables)->reject(function ($name) use ($tables) {
+                return !in_array($name, $tables);
+            })->toArray();
+        }
+        if (!empty($reject)) {
+            foreach ($reject as $table) {
+                $pos = strpos($table, '*');
+                if ($pos !== false) {
+                    $aTables = collect($aTables)->reject(function ($name) use ($table) {
+                        return starts_with($name, str_replace('*', '', $table));
+                    })->toArray();
+                }
+            }
+            $aTables = collect($aTables)->reject(function ($name) use ($reject) {
+                return in_array($name, $reject);
+            })->toArray();
+        }
+
+        return $aTables;
     }
 }

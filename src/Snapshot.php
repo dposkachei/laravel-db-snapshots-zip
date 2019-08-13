@@ -22,42 +22,24 @@ class Snapshot
     /** @var string */
     public $name;
 
-    /** @var string */
-    public $compressionExtension = null;
-
     public function __construct(Disk $disk, string $fileName)
     {
         $this->disk = $disk;
 
         $this->fileName = $fileName;
 
-        $pathinfo = pathinfo($fileName);
-
-        if ($pathinfo['extension'] === 'gz') {
-            $this->compressionExtension = $pathinfo['extension'];
-            $fileName = $pathinfo['filename'];
-        }
-
         $this->name = pathinfo($fileName, PATHINFO_FILENAME);
     }
 
-    public function load(string $connectionName = null)
+    public function load($table = '')
     {
         event(new LoadingSnapshot($this));
 
-        if ($connectionName !== null) {
-            DB::setDefaultConnection($connectionName);
-        }
-
-        $this->dropAllCurrentTables();
+        $this->dropAllCurrentTables($table);
 
         $dbDumpContents = $this->disk->get($this->fileName);
 
-        if ($this->compressionExtension === 'gz') {
-            $dbDumpContents = gzdecode($dbDumpContents);
-        }
-
-        DB::connection($connectionName)->unprepared($dbDumpContents);
+        DB::unprepared($dbDumpContents);
 
         event(new LoadedSnapshot($this));
     }
@@ -81,11 +63,13 @@ class Snapshot
         return Carbon::createFromTimestamp($this->disk->lastModified($this->fileName));
     }
 
-    protected function dropAllCurrentTables()
+    protected function dropAllCurrentTables($table = '')
     {
         $tableDropper = TableDropperFactory::create(DB::getDriverName());
 
-        $tableDropper->dropAllTables();
+        if ($table === '') {
+            $tableDropper->dropAllTables();
+        }
 
         DB::reconnect();
     }

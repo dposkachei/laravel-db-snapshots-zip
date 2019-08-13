@@ -46,7 +46,7 @@ class DbDumperFactory
         }
 
         if ($driver === 'pgsql') {
-            return (new PostgreSql())->useInserts();
+            return new PostgreSql();
         }
 
         if ($driver === 'sqlite') {

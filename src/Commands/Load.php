@@ -4,17 +4,19 @@ namespace Spatie\DbSnapshots\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
+use Spatie\DbSnapshots\Commands\Concerns\AsksForSnapshotTable;
 use Spatie\DbSnapshots\SnapshotRepository;
 use Spatie\DbSnapshots\Commands\Concerns\AsksForSnapshotName;
 
 class Load extends Command
 {
     use AsksForSnapshotName;
+    use AsksForSnapshotTable;
     use ConfirmableTrait;
 
-    protected $signature = 'snapshot:load {name?} {--connection=} {--force} --disk';
+    protected $signature = 'snapshot:load {name?} {table?} --disk';
 
-    protected $description = 'Load up a snapshot.';
+    protected $description = 'Load up a snapshots.';
 
     public function handle()
     {
@@ -32,6 +34,8 @@ class Load extends Command
 
         $name = $this->argument('name') ?: $this->askForSnapshotName();
 
+        //$table = $this->argument('table') ?: $this->askForSnapshotTable();
+
         $snapshot = app(SnapshotRepository::class)->findByName($name);
 
         if (! $snapshot) {
@@ -40,7 +44,7 @@ class Load extends Command
             return;
         }
 
-        $snapshot->load($this->option('connection'));
+        $snapshot->load();
 
         $this->info("Snapshot `{$name}` loaded!");
     }

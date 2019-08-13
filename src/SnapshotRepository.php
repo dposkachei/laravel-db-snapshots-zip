@@ -15,16 +15,12 @@ class SnapshotRepository
         $this->disk = $disk;
     }
 
-    public function getAll(): Collection
+    public function getAll($path = ''): Collection
     {
-        return collect($this->disk->allFiles())
+        $files = $path !== '' ? $this->disk->allFiles($path)
+            : $this->disk->allFiles();
+        return collect($files)
             ->filter(function (string $fileName) {
-                $pathinfo = pathinfo($fileName);
-
-                if ($pathinfo['extension'] === 'gz') {
-                    $fileName = $pathinfo['filename'];
-                }
-
                 return pathinfo($fileName, PATHINFO_EXTENSION) === 'sql';
             })
             ->map(function (string $fileName) {
@@ -35,10 +31,21 @@ class SnapshotRepository
             });
     }
 
-    public function findByName(string $name)
+    public function findByName(string $path = '', $name = '')
     {
-        return $this->getAll()->first(function (Snapshot $snapshot) use ($name) {
-            return $snapshot->name === $name;
-        });
+        if ($name === '') {
+            $name = $path;
+            $path = '';
+        }
+        if (!is_array($name)) {
+            return $this->getAll($path)->first(function (Snapshot $snapshot) use ($name) {
+                return $snapshot->name === $name;
+            });
+        } else {
+            return $this->getAll($path)->filter(function (Snapshot $snapshot) use ($name) {
+                return in_array($snapshot->name, $name);
+            });
+        }
+
     }
 }

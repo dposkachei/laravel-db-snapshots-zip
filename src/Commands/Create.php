@@ -2,6 +2,7 @@
 
 namespace Spatie\DbSnapshots\Commands;
 
+use DB;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Spatie\DbSnapshots\Helpers\Format;
@@ -9,7 +10,7 @@ use Spatie\DbSnapshots\SnapshotFactory;
 
 class Create extends Command
 {
-    protected $signature = 'snapshot:create {name?} {--connection=} {--compress}';
+    protected $signature = 'snapshot:create {name?} {--connection}';
 
     protected $description = 'Create a new snapshot.';
 
@@ -21,15 +22,12 @@ class Create extends Command
             ?: config('db-snapshots.default_connection')
             ?? config('database.default');
 
-        $snapshotName = $this->argument('name') ?: Carbon::now()->format('Y-m-d_H-i-s');
-
-        $compress = $this->option('compress') || config('db-snapshots.compress', false);
+        $snapshotName = $this->argument('name') ?: Carbon::now()->format('Y-m-d H:i:s');
 
         $snapshot = app(SnapshotFactory::class)->create(
             $snapshotName,
             config('db-snapshots.disk'),
-            $connectionName,
-            $compress
+            $connectionName
         );
 
         $size = Format::humanReadableSize($snapshot->size());
