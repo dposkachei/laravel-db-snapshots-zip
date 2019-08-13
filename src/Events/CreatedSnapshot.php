@@ -1,12 +1,12 @@
 <?php
 
-namespace Spatie\DbSnapshots\Events;
+namespace SpatDposkacheiie\DbSnapshots\Events;
 
-use Spatie\DbSnapshots\Snapshot;
+use Dposkachei\DbSnapshots\Snapshot;
 
 class CreatedSnapshot
 {
-    /** @var \Spatie\DbSnapshots\Snapshot */
+    /** @var \Dposkachei\DbSnapshots\Snapshot */
     public $snapshot;
 
     public function __construct(Snapshot $snapshot)

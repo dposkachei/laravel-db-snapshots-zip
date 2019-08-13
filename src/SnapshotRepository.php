@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\DbSnapshots;
+namespace Dposkachei\DbSnapshots;
 
 use Illuminate\Support\Collection;
 use Illuminate\Contracts\Filesystem\Filesystem as Disk;

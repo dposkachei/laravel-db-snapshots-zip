@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\DbSnapshots\Helpers;
+namespace Dposkachei\DbSnapshots\Helpers;
 
 class Format
 {

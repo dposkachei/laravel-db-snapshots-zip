@@ -1,13 +1,13 @@
 <?php
 
-namespace Spatie\DbSnapshots;
+namespace Dposkachei\DbSnapshots;
 
-use Spatie\DbSnapshots\Commands\Load;
+use Dposkachei\DbSnapshots\Commands\Load;
 use Illuminate\Support\ServiceProvider;
-use Spatie\DbSnapshots\Commands\Create;
-use Spatie\DbSnapshots\Commands\Delete;
+use Dposkachei\DbSnapshots\Commands\Create;
+use Dposkachei\DbSnapshots\Commands\Delete;
 use Illuminate\Contracts\Filesystem\Factory;
-use Spatie\DbSnapshots\Commands\ListSnapshots;
+use Dposkachei\DbSnapshots\Commands\ListSnapshots;
 
 class DbSnapshotsServiceProvider extends ServiceProvider
 {

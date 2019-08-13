@@ -1,11 +1,11 @@
 <?php
 
-namespace Spatie\DbSnapshots\Commands;
+namespace Dposkachei\DbSnapshots\Commands;
 
 use Illuminate\Console\Command;
-use Spatie\DbSnapshots\Snapshot;
-use Spatie\DbSnapshots\Helpers\Format;
-use Spatie\DbSnapshots\SnapshotRepository;
+use Dposkachei\DbSnapshots\Snapshot;
+use Dposkachei\DbSnapshots\Helpers\Format;
+use Dposkachei\DbSnapshots\SnapshotRepository;
 
 class ListSnapshots extends Command
 {

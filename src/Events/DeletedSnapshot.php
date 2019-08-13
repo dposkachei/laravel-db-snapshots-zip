@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\DbSnapshots\Events;
+namespace Dposkachei\DbSnapshots\Events;
 
 use Illuminate\Filesystem\FilesystemAdapter;
 

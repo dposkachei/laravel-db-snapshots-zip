@@ -1,12 +1,11 @@
 <?php
 
-namespace Spatie\DbSnapshots\Commands;
+namespace Dposkachei\DbSnapshots\Commands;
 
-use DB;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Spatie\DbSnapshots\Helpers\Format;
-use Spatie\DbSnapshots\SnapshotFactory;
+use Dposkachei\DbSnapshots\Helpers\Format;
+use Dposkachei\DbSnapshots\SnapshotFactory;
 
 class Create extends Command
 {

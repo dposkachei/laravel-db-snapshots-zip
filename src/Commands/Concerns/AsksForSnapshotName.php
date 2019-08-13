@@ -1,9 +1,9 @@
 <?php
 
-namespace Spatie\DbSnapshots\Commands\Concerns;
+namespace Dposkachei\DbSnapshots\Commands\Concerns;
 
-use Spatie\DbSnapshots\Snapshot;
-use Spatie\DbSnapshots\SnapshotRepository;
+use Dposkachei\DbSnapshots\Snapshot;
+use Dposkachei\DbSnapshots\SnapshotRepository;
 
 trait AsksForSnapshotName
 {

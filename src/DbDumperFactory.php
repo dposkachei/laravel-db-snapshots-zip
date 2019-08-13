@@ -1,12 +1,12 @@
 <?php
 
-namespace Spatie\DbSnapshots;
+namespace Dposkachei\DbSnapshots;
 
 use Spatie\DbDumper\DbDumper;
 use Spatie\DbDumper\Databases\MySql;
 use Spatie\DbDumper\Databases\Sqlite;
 use Spatie\DbDumper\Databases\PostgreSql;
-use Spatie\DbSnapshots\Exceptions\CannotCreateDbDumper;
+use Dposkachei\DbSnapshots\Exceptions\CannotCreateDbDumper;
 
 class DbDumperFactory
 {

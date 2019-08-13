@@ -1,10 +1,10 @@
 <?php
 
-namespace Spatie\DbSnapshots\Commands;
+namespace Dposkachei\DbSnapshots\Commands;
 
 use Illuminate\Console\Command;
-use Spatie\DbSnapshots\SnapshotRepository;
-use Spatie\DbSnapshots\Commands\Concerns\AsksForSnapshotName;
+use Dposkachei\DbSnapshots\SnapshotRepository;
+use Dposkachei\DbSnapshots\Commands\Concerns\AsksForSnapshotName;
 
 class Delete extends Command
 {

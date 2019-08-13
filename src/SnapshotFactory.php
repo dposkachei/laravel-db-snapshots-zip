@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\DbSnapshots;
+namespace Dposkachei\DbSnapshots;
 
 use Chumper\Zipper\Facades\Zipper;
 use Illuminate\Support\Facades\DB;
@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\File;
 use Spatie\DbDumper\DbDumper;
 use Illuminate\Contracts\Filesystem\Factory;
 use Illuminate\Filesystem\FilesystemAdapter;
-use Spatie\DbSnapshots\Events\CreatedSnapshot;
-use Spatie\DbSnapshots\Events\CreatingSnapshot;
+use Dposkachei\DbSnapshots\Events\CreatedSnapshot;
+use Dposkachei\DbSnapshots\Events\CreatingSnapshot;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
-use Spatie\DbSnapshots\Exceptions\CannotCreateDisk;
+use Dposkachei\DbSnapshots\Exceptions\CannotCreateDisk;
 
 class SnapshotFactory
 {
-    /** @var \Spatie\DbSnapshots\DbDumperFactory */
+    /** @var \Dposkachei\DbSnapshots\DbDumperFactory */
     protected $dumperFactory;
 
     /** @var \Illuminate\Contracts\Filesystem\Factory */

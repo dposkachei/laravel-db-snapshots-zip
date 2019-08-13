@@ -1,12 +1,12 @@
 <?php
 
-namespace Spatie\DbSnapshots\Commands;
+namespace Dposkachei\DbSnapshots\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
-use Spatie\DbSnapshots\Commands\Concerns\AsksForSnapshotTable;
-use Spatie\DbSnapshots\SnapshotRepository;
-use Spatie\DbSnapshots\Commands\Concerns\AsksForSnapshotName;
+use Dposkachei\DbSnapshots\Commands\Concerns\AsksForSnapshotTable;
+use Dposkachei\DbSnapshots\SnapshotRepository;
+use Dposkachei\DbSnapshots\Commands\Concerns\AsksForSnapshotName;
 
 class Load extends Command
 {

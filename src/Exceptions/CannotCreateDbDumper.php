@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\DbSnapshots\Exceptions;
+namespace Dposkachei\DbSnapshots\Exceptions;
 
 use Exception;
 
